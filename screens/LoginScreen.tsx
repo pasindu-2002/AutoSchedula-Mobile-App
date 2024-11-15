@@ -19,8 +19,10 @@ export default function LoginScreen() {
     end={{ x: 0, y: 1 }}
     style={styles.container}
     >
+      {/* App Bar */}
       <View style={styles.appBar}>
-        <Text style={styles.title}>AutoSchedula 📚</Text>
+        <Text style={styles.title}>AutoSchedula</Text>
+        <Ionicons name="book" size={24} color="#fff" />
       </View>
 
       <View style={styles.content}>
@@ -77,8 +79,12 @@ const styles = StyleSheet.create({
   },
   appBar: {
     height: 100,
-    justifyContent: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 25,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingVertical: 10,
   },
   title: {
     fontSize: 24,
