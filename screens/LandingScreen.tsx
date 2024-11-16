@@ -2,8 +2,10 @@ import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 
 export default function WelcomeScreen() {
+
   return (
     <LinearGradient
       colors={["#7C5B8E", "#0B0909"]}
