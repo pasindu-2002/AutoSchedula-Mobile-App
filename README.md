@@ -87,11 +87,9 @@ Contributions are welcome! Please fork this repository and create a pull request
 
 ##License
 Distributed under the MIT License. See LICENSE for more information.
-    ```bash
+ ```bash
     This code provides the content for your `README.md` file in markdown format. Just copy and paste it into your file in your GitHub repository. Let me know if there's anything else you need!
 
-
-##License
 
 
 
