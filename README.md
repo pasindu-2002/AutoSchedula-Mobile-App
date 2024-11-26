@@ -85,7 +85,7 @@ AutoSchedula uses MySQL to store timetable data, user information, and other rel
 ##Contributing
  Contributions are welcome! Please fork this repository and create a pull request for any feature requests or improvements.
 
-4. Screenshot
+###Screenshot
 
 <img src="https://github.com/user-attachments/assets/58b8e206-96ae-4ec5-afe6-b0705777816d" width= 40% height= 40% alt="Image 2">
 
