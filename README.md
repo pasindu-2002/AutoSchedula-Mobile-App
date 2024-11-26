@@ -82,13 +82,10 @@ AutoSchedula uses MySQL to store timetable data, user information, and other rel
 2. Manage Timetables: Configure, add, or edit timetable slots for students and lecturers.
 3. Mobile Access: Students and lecturers can view their personalized timetables on the mobile app.
 
-##Contributing
- Contributions are welcome! Please fork this repository and create a pull request for any feature requests or improvements.
 
-###Screenshot
+##Screenshot
 
 <img src="https://github.com/user-attachments/assets/58b8e206-96ae-4ec5-afe6-b0705777816d" width= 40% height= 40% alt="Image 2">
-
 
 <img src="https://github.com/user-attachments/assets/e67b12bc-aa31-4623-98b4-ede085585a6b" width= 40% height= 40% alt="Image 2">
 
