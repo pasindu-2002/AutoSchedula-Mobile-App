@@ -11,8 +11,7 @@ AutoSchedula is a time management tool created to help the National Institute of
 - [Installation](#installation)
 - [Database](#database)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Screenshot](#Screenshot)
 
 ## About the Project
 
