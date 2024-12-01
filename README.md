@@ -87,6 +87,9 @@ AutoSchedula uses MySQL to store timetable data, user information, and other rel
 
 <img src="https://github.com/user-attachments/assets/58b8e206-96ae-4ec5-afe6-b0705777816d" width= 30% height= 30% alt="Image 2">
 
+<img src="https://github.com/user-attachments/assets/ba8f772b-9588-410b-b5e5-93615f79875e" width= 30% height= 30% alt="Image 3">
+
+<img src="https://github.com/user-attachments/assets/a455e82f-ea11-45f3-90e2-d6c6918f6137" width= 30% height= 30% alt="Image 4">
 
 
 
