@@ -9,8 +9,10 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
 
 export default function LoginScreen() {
+  const navigation = useNavigation();
   return (
     <LinearGradient
     colors={["#7C5B8E", "#0B0909"]}
@@ -65,8 +67,11 @@ export default function LoginScreen() {
         </View>
 
         {/* Login Button */}
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} accessible={true}
+            accessibilityLabel="Navigate to the Login screen"
+            onPress={() => navigation.navigate("SchedulesTimeTable")}>
           <Text style={styles.loginText}>Log In</Text>
+          
         </TouchableOpacity>
       </View>
     </LinearGradient>

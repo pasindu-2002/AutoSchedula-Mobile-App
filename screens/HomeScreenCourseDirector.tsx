@@ -13,10 +13,12 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 
-export default function HomeScreen() {
+export default function HomeScreenCourseDirector() {
   const [menuVisible, setMenuVisible] = useState(false);
 
   const toggleMenu = () => setMenuVisible(!menuVisible);
+
+  
 
   const timetable = [
     { day: 'Monday', time: '9:00 AM - 10:00 AM', subject: 'Math' },
@@ -132,6 +134,14 @@ export default function HomeScreen() {
                         color="#000"
                       />
                       <Text style={styles.menuText}>View Time Table</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.menuItem}>
+                      <MaterialIcons name="assignment" size={20} color="#000" />
+                      <Text style={styles.menuText}>Event</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.menuItem}>
+                      <MaterialIcons name="schedule" size={20} color="#000" />
+                      <Text style={styles.menuText}>Schedules</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.menuItem}>
                       <MaterialIcons

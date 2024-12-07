@@ -1,16 +1,19 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 export default function WelcomeScreen() {
+  const navigation = useNavigation();
+  const { width } = Dimensions.get("window");
 
   return (
     <LinearGradient
       colors={["#7C5B8E", "#0B0909"]}
       start={{ x: 1, y: 0 }}
       end={{ x: 1, y: 1 }}
+      style={{ flex: 1 }}
     >
       {/* App Bar */}
       <View style={styles.appBar}>
@@ -24,11 +27,12 @@ export default function WelcomeScreen() {
           <Image
             source={require("../assets/landing.png")}
             style={styles.image}
+
           />
         </View>
 
         {/* Text Content */}
-        <Text style={styles.heading}>Learning Today,</Text> 
+        <Text style={styles.heading}>Learning Today,</Text>
         <Text style={styles.heading}>Leading Tomorrow.!</Text>
         <Text style={styles.description}>
           I wish you luck as you navigate this ever-changing world of knowledge
@@ -36,11 +40,21 @@ export default function WelcomeScreen() {
         </Text>
 
         {/* Buttons */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.getStartedButton}>
+        <View style={[styles.buttonContainer, { width: width * 0.8 }]}>
+          <TouchableOpacity
+            style={styles.getStartedButton}
+            accessible={true}
+            accessibilityLabel="Navigate to the Home screen"
+           
+          >
             <Text style={styles.getStartedText}>Get Started</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.loginButton}>
+          <TouchableOpacity
+            style={styles.loginButton}
+            accessible={true}
+            accessibilityLabel="Navigate to the Login screen"
+            onPress={() => navigation.navigate("Login")}
+          >
             <Text style={styles.loginText}>Login in</Text>
           </TouchableOpacity>
         </View>
@@ -64,22 +78,19 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     paddingVertical: 10,
-
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#fff",
   },
-  menuIcon: {
-    position: "absolute",
-    right: 0,
-  },
   imageContainer: {
     alignItems: "center",
     marginBottom: 30,
   },
   image: {
+    width: 700,
+    height: 400,
     resizeMode: "contain",
   },
   heading: {
@@ -97,17 +108,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   buttonContainer: {
-    alignContent:"center",
-
     flexDirection: "row",
-    justifyContent: 'center',
-    width: "100%",
+    justifyContent: "space-between",
     marginTop: 20,
   },
   getStartedButton: {
     backgroundColor: "#fff",
-    height: 50, // Set a fixed height
-    width: 150, // Set a fixed width
+    height: 50,
+    width: 150,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
@@ -115,8 +123,8 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: "rgba(255, 255, 255, 0.2)",
-    height: 50, // Same height as Get Started
-    width: 150, // Same width as Get Started
+    height: 50,
+    width: 150,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
