@@ -11,8 +11,7 @@ AutoSchedula is a time management tool created to help the National Institute of
 - [Installation](#installation)
 - [Database](#database)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Screenshot](#Screenshot)
 
 ## About the Project
 
@@ -82,13 +81,17 @@ AutoSchedula uses MySQL to store timetable data, user information, and other rel
 2. Manage Timetables: Configure, add, or edit timetable slots for students and lecturers.
 3. Mobile Access: Students and lecturers can view their personalized timetables on the mobile app.
 
-##Contributing
-Contributions are welcome! Please fork this repository and create a pull request for any feature requests or improvements.
 
-##License
-Distributed under the MIT License. See LICENSE for more information.
- ```bash
-This code provides the content for your `README.md` file in markdown format. Just copy and paste it into your file in your GitHub repository. Let me know if there's anything else you need!
+## Screenshot
+<img src="https://github.com/user-attachments/assets/e67b12bc-aa31-4623-98b4-ede085585a6b" width= 30% height= 30% alt="Image 1">
+
+<img src="https://github.com/user-attachments/assets/58b8e206-96ae-4ec5-afe6-b0705777816d" width= 30% height= 30% alt="Image 2">
+
+<img src="https://github.com/user-attachments/assets/ba8f772b-9588-410b-b5e5-93615f79875e" width= 30% height= 30% alt="Image 3">
+
+<img src="https://github.com/user-attachments/assets/a455e82f-ea11-45f3-90e2-d6c6918f6137" width= 30% height= 30% alt="Image 4">
+
+
 
 
 
