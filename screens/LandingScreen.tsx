@@ -7,7 +7,6 @@ import { useNavigation } from "@react-navigation/native";
 export default function WelcomeScreen() {
   const navigation = useNavigation();
   const { width } = Dimensions.get("window");
-
   return (
     <LinearGradient
       colors={["#7C5B8E", "#0B0909"]}

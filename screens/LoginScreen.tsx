@@ -13,13 +13,20 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
+
+  const handleLogin = (username: string, password: string) => {
+    if(username && password) {
+      
+    }
+  };
+
   return (
     <LinearGradient
-    colors={["#7C5B8E", "#0B0909"]}
-    locations={[0.01, 0.79]}
-    start={{ x: 1, y: -0.2 }}  
-    end={{ x: 0, y: 1 }}
-    style={styles.container}
+      colors={["#7C5B8E", "#0B0909"]}
+      locations={[0.01, 0.79]}
+      start={{ x: 1, y: -0.2 }}
+      end={{ x: 0, y: 1 }}
+      style={styles.container}
     >
       {/* App Bar */}
       <View style={styles.appBar}>
@@ -39,7 +46,7 @@ export default function LoginScreen() {
 
         {/* Username Input */}
         <View style={styles.inputContainer}>
-        <Ionicons name="person" size={20} color="#ccc" style={styles.icon} />
+          <Ionicons name="person" size={20} color="#ccc" style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Enter Your Username"
@@ -49,7 +56,12 @@ export default function LoginScreen() {
 
         {/* Password Input */}
         <View style={styles.inputContainer}>
-          <Ionicons name="lock-closed" size={20} color="#ccc" style={styles.icon} />
+          <Ionicons
+            name="lock-closed"
+            size={20}
+            color="#ccc"
+            style={styles.icon}
+          />
           <TextInput
             style={[styles.input, { flex: 1 }]}
             placeholder="Enter Your Password"
@@ -67,11 +79,13 @@ export default function LoginScreen() {
         </View>
 
         {/* Login Button */}
-        <TouchableOpacity style={styles.loginButton} accessible={true}
-            accessibilityLabel="Navigate to the Login screen"
-            onPress={() => navigation.navigate("SchedulesTimeTable")}>
+        <TouchableOpacity
+          style={styles.loginButton}
+          accessible={true}
+          accessibilityLabel="Navigate to the Login screen"
+          onPress={() => navigation.navigate("HomeScreenStudent")}
+        >
           <Text style={styles.loginText}>Log In</Text>
-          
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -112,7 +126,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   image: {
-    
     resizeMode: "contain",
   },
   inputContainer: {
@@ -126,7 +139,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 10,
-    color:"#000000"
+    color: "#000000",
   },
   input: {
     color: "#fff",
@@ -155,6 +168,6 @@ const styles = StyleSheet.create({
   loginText: {
     color: "#2E1A3E",
     fontSize: 18,
-    fontWeight: '900',
+    fontWeight: "900",
   },
 });

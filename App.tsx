@@ -1,13 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet} from 'react-native';
 import LoginScreen from './screens/LoginScreen';
 import WelcomeScreen from './screens/LandingScreen';
 import HomeScreen from './screens/HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreenCD from './screens/HomeScreen';
 import HomeScreenCourseDirector from './screens/HomeScreenCourseDirector';
-import SchedulesTimeTable from './screens/SchedulesTimeTable';
+import HomeScreenLecturer from './screens/HomeScreenLecturer';
+import HomeScreenStudent from './screens/HomeScreenStudent';
 const Stack = createStackNavigator();
 export default function App() {
   return (
@@ -17,7 +17,8 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="HomeScreenCourseDirector" component={HomeScreenCourseDirector} options={{ headerShown: false }}/>
-        <Stack.Screen name="SchedulesTimeTable" component={SchedulesTimeTable} options={{ headerShown: false }}/>
+        <Stack.Screen name="HomeScreenLecturer" component={HomeScreenLecturer} options={{ headerShown: false }}/>
+        <Stack.Screen name="HomeScreenStudent" component={HomeScreenStudent} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -12,7 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 
-export default function HomeScreenCourseDirector() {
+export default function HomeScreenLecturer() {
   const [menuVisible, setMenuVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [newEntry, setNewEntry] = useState({
@@ -94,11 +94,6 @@ export default function HomeScreenCourseDirector() {
               </View>
             ))}
           </ScrollView>
-          <TouchableOpacity style={styles.addButton} onPress={toggleAddModal}>
-            <MaterialIcons name="add" size={20} color="#fff" />
-            <Text style={styles.addButtonText}>ScheduleTimeTable</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity style={styles.addButton} onPress={toggleAddModal}>
             <MaterialIcons name="add" size={20} color="#fff" />
             <Text style={styles.addButtonText}>Update Time Table</Text>
