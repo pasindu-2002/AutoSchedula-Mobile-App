@@ -1,22 +1,72 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   Image,
   TextInput,
+  Alert,
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleLogin = (username: string, password: string) => {
-    if(username && password) {
-      
+  const handleLogin = async () => {
+    try {
+      const url = `https://app.pasinduu.me/student.php?stu_id=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Login Successful', "You have successfully logged in.");
+        // Navigate to HomeScreenStudent
+        navigation.navigate('HomeScreenStudent', { studentData: result.data });
+        // Store student data in local storage
+        await AsyncStorage.setItem('studentData', JSON.stringify(result.data));
+
+      } else {
+
+        /////////////////////////////////////////
+
+        const url = `https://app.pasinduu.me/lecturers.php?emp_no=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          Alert.alert('Login Successful', "You have successfully logged in.");
+          navigation.navigate('HomeScreenCourseDirector', { lecturerData: result.data });
+          await AsyncStorage.setItem('lecturerData', JSON.stringify(result.data));
+        } else {
+          Alert.alert('Login Failed', result.message);
+
+          
+
+        }
+
+        //////////////////////////////////////////////
+
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again later.');
     }
   };
 
@@ -50,7 +100,10 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="Enter Your Username"
+            value={email}
+            onChangeText={setEmail}
             placeholderTextColor="#757478"
+            autoCapitalize="none"
           />
         </View>
 
@@ -66,6 +119,8 @@ export default function LoginScreen() {
             style={[styles.input, { flex: 1 }]}
             placeholder="Enter Your Password"
             placeholderTextColor="#757478"
+            value={password}
+        onChangeText={setPassword}
             secureTextEntry
           />
         </View>
@@ -83,7 +138,7 @@ export default function LoginScreen() {
           style={styles.loginButton}
           accessible={true}
           accessibilityLabel="Navigate to the Login screen"
-          onPress={() => navigation.navigate("HomeScreenStudent")}
+          onPress={handleLogin} 
         >
           <Text style={styles.loginText}>Log In</Text>
         </TouchableOpacity>

@@ -1,55 +1,108 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Modal,
-  TextInput,
+  Alert,
   SafeAreaView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreenStudent() {
+  const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
+  const [username, setUsername] = useState('');
+  const [batch, setBatch] = useState('');
+
   const [newEntry, setNewEntry] = useState({
     day: "",
-    time: "",
+    lecturer: "",
     subject: "",
-    description: "",
   });
   const [updatedTimetable, setUpdatedTimetable] = useState([
-    { day: "Monday", time: "9:00 AM - 10:00 AM", subject: "Math" },
-    { day: "Monday", time: "10:00 AM - 11:00 AM", subject: "Science" },
-    { day: "Tuesday", time: "9:00 AM - 10:00 AM", subject: "History" },
-    { day: "Monday", time: "9:00 AM - 10:00 AM", subject: "Math" },
-    { day: "Monday", time: "10:00 AM - 11:00 AM", subject: "Science" },
-    { day: "Tuesday", time: "9:00 AM - 10:00 AM", subject: "History" },
-    { day: "Monday", time: "9:00 AM - 10:00 AM", subject: "Math" },
-    { day: "Monday", time: "10:00 AM - 11:00 AM", subject: "Science" },
-    { day: "Tuesday", time: "9:00 AM - 10:00 AM", subject: "History" },
-    { day: "Monday", time: "9:00 AM - 10:00 AM", subject: "Math" },
-    { day: "Monday", time: "10:00 AM - 11:00 AM", subject: "Science" },
-    { day: "Tuesday", time: "9:00 AM - 10:00 AM", subject: "History" },
-    { day: "Monday", time: "9:00 AM - 10:00 AM", subject: "Math" },
-    { day: "Monday", time: "10:00 AM - 11:00 AM", subject: "Science" },
-    { day: "Tuesday", time: "9:00 AM - 10:00 AM", subject: "History" },
+    { day: "", lecturer: "", subject: "" },
+
   ]);
+
+  useEffect(() => {
+    const fetchTimetable = async () => {
+      try {
+        const response = await fetch(`https://app.pasinduu.me/readTimetables.php?batch_id=${batch}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          const formattedTimetable = data.data.map((entry: { date: string | number | Date; lecturer_name: any; module_id: any; }) => {
+            const date = new Date(entry.date);
+            const day = date.toLocaleDateString('en-GB');
+
+            return {
+              day: day,
+              lecturer: entry.lecturer_name,
+              subject: entry.module_id, 
+            };
+          });
+          setUpdatedTimetable(formattedTimetable);
+        } else {
+          console.error(data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching timetable:', error);
+      }
+    };
+    fetchTimetable();
+  }, []);
 
   const toggleMenu = () => setMenuVisible(!menuVisible);
   const toggleAddModal = () => setAddModalVisible(!addModalVisible);
 
-  const handleAddEntry = () => {
-    if (newEntry.day && newEntry.time && newEntry.subject) {
-      setUpdatedTimetable([...updatedTimetable, newEntry]);
-      setNewEntry({ day: "", time: "", subject: "", description: "" });
-      toggleAddModal();
-    } else {
-      alert("Please fill all required fields.");
-    }
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        const storedStudentData = await AsyncStorage.getItem('studentData');
+        if (storedStudentData) {
+          const studentData = JSON.parse(storedStudentData);
+          setUsername(studentData.full_name);
+          setBatch(studentData.batch);
+        }
+      } catch (error) {
+        console.error('Failed to fetch student data from AsyncStorage', error);
+      }
+    };
+
+    fetchStudentData();
+  }, []);
+
+
+  const handleLogout = async () => {
+    Alert.alert(
+      'Confirm Logout',
+      'Are you sure you want to log out?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem('studentData');
+              navigation.navigate('Login');
+            } catch (error) {
+              console.error('Failed to clear student data from AsyncStorage', error);
+              Alert.alert('Error', 'Something went wrong. Please try again later.');
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -75,8 +128,8 @@ export default function HomeScreenStudent() {
 
         {/* Profile Section */}
         <View style={styles.profileCard}>
-          <Text style={styles.username}>Hi, Eranga</Text>
-          <TouchableOpacity style={styles.logoutButton}>
+          <Text style={styles.username}>Hi, {username}</Text>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <MaterialIcons name="logout" size={20} color="#000" />
             <Text style={styles.logoutText}>Log Out</Text>
           </TouchableOpacity>
@@ -89,71 +142,12 @@ export default function HomeScreenStudent() {
             {updatedTimetable.map((entry, index) => (
               <View key={index} style={styles.timetableEntry}>
                 <Text style={styles.timetableDay}>{entry.day}</Text>
-                <Text style={styles.timetableTime}>{entry.time}</Text>
+                <Text style={styles.timetableTime}>{entry.lecturer}</Text>
                 <Text style={styles.timetableSubject}>{entry.subject}</Text>
               </View>
             ))}
           </ScrollView>
         </View>
-
-        {/* Add Entry Modal */}
-        <Modal
-          transparent={true}
-          animationType="slide"
-          visible={addModalVisible}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.addModalContainer}>
-              <Text style={styles.modalTitle}>Add Timetable Entry</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Day"
-                placeholderTextColor="#aaa"
-                value={newEntry.day}
-                onChangeText={(text) => setNewEntry({ ...newEntry, day: text })}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Time"
-                placeholderTextColor="#aaa"
-                value={newEntry.time}
-                onChangeText={(text) => setNewEntry({ ...newEntry, time: text })}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Subject"
-                placeholderTextColor="#aaa"
-                value={newEntry.subject}
-                onChangeText={(text) =>
-                  setNewEntry({ ...newEntry, subject: text })
-                }
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Description (Optional)"
-                placeholderTextColor="#aaa"
-                value={newEntry.description}
-                onChangeText={(text) =>
-                  setNewEntry({ ...newEntry, description: text })
-                }
-              />
-              <View style={styles.modalButtons}>
-                <TouchableOpacity
-                  style={styles.saveButton}
-                  onPress={handleAddEntry}
-                >
-                  <Text style={styles.saveButtonText}>Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={toggleAddModal}
-                >
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
       </LinearGradient>
     </SafeAreaView>
   );

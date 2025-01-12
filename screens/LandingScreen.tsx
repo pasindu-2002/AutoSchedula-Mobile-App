@@ -3,10 +3,29 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from "rea
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
   const { width } = Dimensions.get("window");
+
+  const handlePress = async () => {
+    try {
+      const studentData = await AsyncStorage.getItem('studentData');
+      if (studentData) {
+        // Navigate to HomeScreenStudent if studentData exists
+        navigation.navigate('HomeScreenStudent', { studentData: JSON.parse(studentData) });
+      } else {
+        // Navigate to LoginScreen if studentData does not exist
+        navigation.navigate('Login');
+      }
+    } catch (error) {
+      console.error('Failed to fetch student data from AsyncStorage', error);
+      // Navigate to LoginScreen in case of an error
+      navigation.navigate('Login');
+    }
+  };
+
   return (
     <LinearGradient
       colors={["#7C5B8E", "#0B0909"]}
@@ -52,7 +71,7 @@ export default function WelcomeScreen() {
             style={styles.loginButton}
             accessible={true}
             accessibilityLabel="Navigate to the Login screen"
-            onPress={() => navigation.navigate("Login")}
+            onPress={handlePress}
           >
             <Text style={styles.loginText}>Login in</Text>
           </TouchableOpacity>
