@@ -20,55 +20,72 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      const url = `https://app.pasinduu.me/student.php?stu_id=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
-      const response = await fetch(url, {
+      // Attempt Student Login
+      const studentUrl = `https://app.pasinduu.me/student.php?stu_id=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+      const studentResponse = await fetch(studentUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      const studentResult = await studentResponse.json();
+  
+      if (studentResponse.ok) {
+        Alert.alert('Login Successful', 'You have successfully logged in as a student.');
+        // Navigate to HomeScreenStudent
+        navigation.navigate('HomeScreenStudent', { studentData: studentResult.data });
+        // Store student data in local storage
+        await AsyncStorage.setItem('studentData', JSON.stringify(studentResult.data));
+        return; // Exit function after successful student login
+      }
+  
+      // If student login fails, attempt Lecturer Login
+      const lecturerUrl = `https://app.pasinduu.me/lecturers.php?emp_no=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+      const lecturerResponse = await fetch(lecturerUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        Alert.alert('Login Successful', "You have successfully logged in.");
-        // Navigate to HomeScreenStudent
-        navigation.navigate('HomeScreenStudent', { studentData: result.data });
-        // Store student data in local storage
-        await AsyncStorage.setItem('studentData', JSON.stringify(result.data));
-
-      } else {
-
-        /////////////////////////////////////////
-
-        const url = `https://app.pasinduu.me/lecturers.php?emp_no=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          Alert.alert('Login Successful', "You have successfully logged in.");
-          navigation.navigate('HomeScreenCourseDirector', { lecturerData: result.data });
-          await AsyncStorage.setItem('lecturerData', JSON.stringify(result.data));
-        } else {
-          Alert.alert('Login Failed', result.message);
-
-          
-
-        }
-
-        //////////////////////////////////////////////
-
+      const couserDirectorUrl = `https://app.pasinduu.me/getCourseDirector.php?course_director=${encodeURIComponent(email)}`;
+      const couserDirectorResponse = await fetch(couserDirectorUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+  
+      const lecturerResult = await lecturerResponse.json();
+  
+      if (lecturerResponse.ok && couserDirectorResponse.ok) {
+        Alert.alert('Login Successful', 'You have successfully logged in as a lecturer.');
+        // Navigate to HomeScreenCourseDirector
+        navigation.navigate('HomeScreenCourseDirector', { lecturerData: lecturerResult.data });
+        // Store lecturer data in local storage
+        await AsyncStorage.setItem('lecturerData', JSON.stringify(lecturerResult.data));
+        return; // Exit function after successful lecturer login
+      }else if(lecturerResponse.ok){
+        Alert.alert('Login Successful', 'You have successfully logged in as a lecturer.');
+        // Navigate to HomeScreenCourseDirector
+        navigation.navigate('HomeScreenLecturer', { lecturerData: lecturerResult.data });
+        // Store lecturer data in local storage
+        await AsyncStorage.setItem('lecturerData', JSON.stringify(lecturerResult.data));
+        return; // Exit function after successful lecturer login
       }
+  
+      // If both logins fail, show an error message
+      Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
+  
     } catch (error) {
+      // Handle any unexpected errors
       Alert.alert('Error', 'Something went wrong. Please try again later.');
     }
+
+
   };
+  
 
   return (
     <LinearGradient

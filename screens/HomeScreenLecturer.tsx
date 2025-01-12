@@ -3,6 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
+  Alert,
   TouchableOpacity,
   ScrollView,
   Modal,
@@ -12,9 +13,10 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreenLecturer() {
-
+  const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [newEntry, setNewEntry] = useState({
@@ -54,6 +56,32 @@ export default function HomeScreenLecturer() {
     }
   };
 
+  const handleLogout = async () => {
+    Alert.alert(
+      'Confirm Logout',
+      'Are you sure you want to log out?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem('studentData');
+              navigation.navigate('Login');
+            } catch (error) {
+              console.error('Failed to clear student data from AsyncStorage', error);
+              Alert.alert('Error', 'Something went wrong. Please try again later.');
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
@@ -78,7 +106,7 @@ export default function HomeScreenLecturer() {
         {/* Profile Section */}
         <View style={styles.profileCard}>
           <Text style={styles.username}>Hi, Eranga</Text>
-          <TouchableOpacity style={styles.logoutButton}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <MaterialIcons name="logout" size={20} color="#000" />
             <Text style={styles.logoutText}>Log Out</Text>
           </TouchableOpacity>

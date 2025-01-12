@@ -19,6 +19,7 @@ export default function HomeScreenStudent() {
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [username, setUsername] = useState('');
   const [batch, setBatch] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const [newEntry, setNewEntry] = useState({
     day: "",
@@ -30,37 +31,7 @@ export default function HomeScreenStudent() {
 
   ]);
 
-  useEffect(() => {
-    const fetchTimetable = async () => {
-      try {
-        const response = await fetch(`https://app.pasinduu.me/readTimetables.php?batch_id=${batch}`);
-        const data = await response.json();
-
-        if (response.ok) {
-          const formattedTimetable = data.data.map((entry: { date: string | number | Date; lecturer_name: any; module_id: any; }) => {
-            const date = new Date(entry.date);
-            const day = date.toLocaleDateString('en-GB');
-
-            return {
-              day: day,
-              lecturer: entry.lecturer_name,
-              subject: entry.module_id, 
-            };
-          });
-          setUpdatedTimetable(formattedTimetable);
-        } else {
-          console.error(data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching timetable:', error);
-      }
-    };
-    fetchTimetable();
-  }, []);
-
-  const toggleMenu = () => setMenuVisible(!menuVisible);
-  const toggleAddModal = () => setAddModalVisible(!addModalVisible);
-
+    // Fetch student data from AsyncStorage
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
@@ -77,6 +48,51 @@ export default function HomeScreenStudent() {
 
     fetchStudentData();
   }, []);
+
+
+  useEffect(() => {
+  const fetchTimetable = async () => {
+    if (!batch) return; // Avoid fetching if batch is not set
+    setLoading(true);
+    try {
+      const response = await fetch(`https://app.pasinduu.me/readTimetables.php?batch_id=${batch}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.data && data.data.length > 0) {
+          const formattedTimetable = data.data.map((entry) => {
+            const date = new Date(entry.date);
+            const day = date.toLocaleDateString('en-GB');
+            return {
+              day,
+              lecturer: entry.lecturer_name,
+              subject: entry.module_id,
+            };
+          });
+          setUpdatedTimetable(formattedTimetable);
+        } else {
+          // No timetable entries found
+          setUpdatedTimetable([]);
+          Alert.alert('No Entries', 'No timetable entries found for the specified batch.');
+        }
+      } else {
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching timetable:', error);
+      Alert.alert('Error', 'Unable to fetch timetable. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchTimetable();
+}, [batch]);
+
+  const toggleMenu = () => setMenuVisible(!menuVisible);
+  const toggleAddModal = () => setAddModalVisible(!addModalVisible);
+
+  
 
 
   const handleLogout = async () => {
