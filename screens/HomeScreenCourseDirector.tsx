@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreenCourseDirector() {
   const navigation = useNavigation();
@@ -21,28 +21,16 @@ export default function HomeScreenCourseDirector() {
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [newEntry, setNewEntry] = useState({
     day: "",
-    time: "",
+    batch: "",
     subject: "",
-    description: "",
   });
   const [updatedTimetable, setUpdatedTimetable] = useState([
-    { day: "Monday", time: "9:00 AM - 10:00 AM", subject: "Math" },
-    { day: "Monday", time: "10:00 AM - 11:00 AM", subject: "Science" },
-    { day: "Tuesday", time: "9:00 AM - 10:00 AM", subject: "History" },
-    { day: "Monday", time: "9:00 AM - 10:00 AM", subject: "Math" },
-    { day: "Monday", time: "10:00 AM - 11:00 AM", subject: "Science" },
-    { day: "Tuesday", time: "9:00 AM - 10:00 AM", subject: "History" },
-    { day: "Monday", time: "9:00 AM - 10:00 AM", subject: "Math" },
-    { day: "Monday", time: "10:00 AM - 11:00 AM", subject: "Science" },
-    { day: "Tuesday", time: "9:00 AM - 10:00 AM", subject: "History" },
-    { day: "Monday", time: "9:00 AM - 10:00 AM", subject: "Math" },
-    { day: "Monday", time: "10:00 AM - 11:00 AM", subject: "Science" },
-    { day: "Tuesday", time: "9:00 AM - 10:00 AM", subject: "History" },
-    { day: "Monday", time: "9:00 AM - 10:00 AM", subject: "Math" },
-    { day: "Monday", time: "10:00 AM - 11:00 AM", subject: "Science" },
-    { day: "Tuesday", time: "9:00 AM - 10:00 AM", subject: "History" },
+    { day: "", batch: "", subject: "" },
   ]);
 
+  const [username, setUsername] = useState("");
+  const [batch, setBatch] = useState("");
+  const [loading, setLoading] = useState(false);
   const toggleMenu = () => setMenuVisible(!menuVisible);
   const toggleAddModal = () => setAddModalVisible(!addModalVisible);
 
@@ -56,24 +44,92 @@ export default function HomeScreenCourseDirector() {
     }
   };
 
+  // Fetch Lecturer data from AsyncStorage
+  useEffect(() => {
+    const fetchLecturerData = async () => {
+      try {
+        const storedLecturerData = await AsyncStorage.getItem("lecturerData");
+        if (storedLecturerData) {
+          const LecturerData = JSON.parse(storedLecturerData);
+          setBatch(LecturerData.emp_no);
+          setUsername(LecturerData.full_name);
+        }
+      } catch (error) {
+        console.error("Failed to fetch Lecturer data from AsyncStorage", error);
+      }
+    };
+
+    fetchLecturerData();
+  }, []);
+
+  useEffect(() => {
+    const fetchTimetable = async () => {
+      if (!batch) return; // Avoid fetching if batch is not set
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://app.pasinduu.me/readTimetables.php?emp_no=${batch}`
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          if (data.data && data.data.length > 0) {
+            const formattedTimetable = data.data.map((entry) => {
+              const date = new Date(entry.date);
+              const day = date.toLocaleDateString("en-GB");
+              return {
+                day,
+                batch: entry.batch_id,
+                subject: entry.module_id,
+              };
+            });
+            setUpdatedTimetable(formattedTimetable);
+          } else {
+            // No timetable entries found
+            setUpdatedTimetable([]);
+            Alert.alert(
+              "No Entries",
+              "No timetable entries found for the specified batch."
+            );
+          }
+        } else {
+          console.error(data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching timetable:", error);
+        Alert.alert("Error", "Unable to fetch timetable. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTimetable();
+  }, [batch]);
+
   const handleLogout = async () => {
     Alert.alert(
-      'Confirm Logout',
-      'Are you sure you want to log out?',
+      "Confirm Logout",
+      "Are you sure you want to log out?",
       [
         {
-          text: 'Cancel',
-          style: 'cancel',
+          text: "Cancel",
+          style: "cancel",
         },
         {
-          text: 'OK',
+          text: "OK",
           onPress: async () => {
             try {
-              await AsyncStorage.removeItem('studentData');
-              navigation.navigate('Login');
+              await AsyncStorage.removeItem("lecturerData");
+              navigation.navigate("Login");
             } catch (error) {
-              console.error('Failed to clear student data from AsyncStorage', error);
-              Alert.alert('Error', 'Something went wrong. Please try again later.');
+              console.error(
+                "Failed to clear Lecturer data from AsyncStorage",
+                error
+              );
+              Alert.alert(
+                "Error",
+                "Something went wrong. Please try again later."
+              );
             }
           },
         },
@@ -105,7 +161,7 @@ export default function HomeScreenCourseDirector() {
 
         {/* Profile Section */}
         <View style={styles.profileCard}>
-          <Text style={styles.username}>Hi, Eranga</Text>
+          <Text style={styles.username}>Hi, {username}</Text>
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <MaterialIcons name="logout" size={20} color="#000" />
             <Text style={styles.logoutText}>Log Out</Text>
@@ -119,7 +175,7 @@ export default function HomeScreenCourseDirector() {
             {updatedTimetable.map((entry, index) => (
               <View key={index} style={styles.timetableEntry}>
                 <Text style={styles.timetableDay}>{entry.day}</Text>
-                <Text style={styles.timetableTime}>{entry.time}</Text>
+                <Text style={styles.timetableTime}>{entry.batch}</Text>
                 <Text style={styles.timetableSubject}>{entry.subject}</Text>
               </View>
             ))}
@@ -133,7 +189,6 @@ export default function HomeScreenCourseDirector() {
             <MaterialIcons name="add" size={20} color="#fff" />
             <Text style={styles.addButtonText}>Update Time Table</Text>
           </TouchableOpacity>
-
         </View>
 
         {/* Add Entry Modal */}
@@ -156,8 +211,10 @@ export default function HomeScreenCourseDirector() {
                 style={styles.input}
                 placeholder="Time"
                 placeholderTextColor="#aaa"
-                value={newEntry.time}
-                onChangeText={(text) => setNewEntry({ ...newEntry, time: text })}
+                value={newEntry.batch}
+                onChangeText={(text) =>
+                  setNewEntry({ ...newEntry, batch: text })
+                }
               />
               <TextInput
                 style={styles.input}
@@ -172,9 +229,9 @@ export default function HomeScreenCourseDirector() {
                 style={styles.input}
                 placeholder="Description (Optional)"
                 placeholderTextColor="#aaa"
-                value={newEntry.description}
+                value={newEntry.subject}
                 onChangeText={(text) =>
-                  setNewEntry({ ...newEntry, description: text })
+                  setNewEntry({ ...newEntry, subject: text })
                 }
               />
               <View style={styles.modalButtons}>

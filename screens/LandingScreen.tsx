@@ -1,9 +1,16 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
@@ -11,18 +18,21 @@ export default function WelcomeScreen() {
 
   const handlePress = async () => {
     try {
-      const studentData = await AsyncStorage.getItem('studentData');
+      const studentData = await AsyncStorage.getItem("studentData");
+      const lecturerData = await AsyncStorage.getItem("lecturerData");
       if (studentData) {
         // Navigate to HomeScreenStudent if studentData exists
-        navigation.navigate('HomeScreenStudent', { studentData: JSON.parse(studentData) });
+        navigation.navigate("HomeScreenStudent", {
+          studentData: JSON.parse(studentData),
+        });
       } else {
         // Navigate to LoginScreen if studentData does not exist
-        navigation.navigate('Login');
+        navigation.navigate("Login");
       }
     } catch (error) {
-      console.error('Failed to fetch student data from AsyncStorage', error);
+      console.error("Failed to fetch student data from AsyncStorage", error);
       // Navigate to LoginScreen in case of an error
-      navigation.navigate('Login');
+      navigation.navigate("Login");
     }
   };
 
@@ -45,7 +55,6 @@ export default function WelcomeScreen() {
           <Image
             source={require("../assets/landing.png")}
             style={styles.image}
-
           />
         </View>
 
@@ -63,7 +72,6 @@ export default function WelcomeScreen() {
             style={styles.getStartedButton}
             accessible={true}
             accessibilityLabel="Navigate to the Home screen"
-           
           >
             <Text style={styles.getStartedText}>Get Started</Text>
           </TouchableOpacity>

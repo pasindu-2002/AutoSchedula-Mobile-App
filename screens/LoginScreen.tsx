@@ -11,81 +11,110 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
       // Attempt Student Login
-      const studentUrl = `https://app.pasinduu.me/student.php?stu_id=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+      const studentUrl = `https://app.pasinduu.me/student.php?stu_id=${encodeURIComponent(
+        email
+      )}&password=${encodeURIComponent(password)}`;
       const studentResponse = await fetch(studentUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-  
+
       const studentResult = await studentResponse.json();
-  
+
       if (studentResponse.ok) {
-        Alert.alert('Login Successful', 'You have successfully logged in as a student.');
+        Alert.alert(
+          "Login Successful",
+          "You have successfully logged in as a student."
+        );
         // Navigate to HomeScreenStudent
-        navigation.navigate('HomeScreenStudent', { studentData: studentResult.data });
+        navigation.navigate("HomeScreenStudent", {
+          studentData: studentResult.data,
+        });
         // Store student data in local storage
-        await AsyncStorage.setItem('studentData', JSON.stringify(studentResult.data));
+        await AsyncStorage.setItem(
+          "studentData",
+          JSON.stringify(studentResult.data)
+        );
         return; // Exit function after successful student login
       }
-  
+
       // If student login fails, attempt Lecturer Login
-      const lecturerUrl = `https://app.pasinduu.me/lecturers.php?emp_no=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+      const lecturerUrl = `https://app.pasinduu.me/lecturers.php?emp_no=${encodeURIComponent(
+        email
+      )}&password=${encodeURIComponent(password)}`;
       const lecturerResponse = await fetch(lecturerUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
-      const couserDirectorUrl = `https://app.pasinduu.me/getCourseDirector.php?course_director=${encodeURIComponent(email)}`;
+      const couserDirectorUrl = `https://app.pasinduu.me/getCourseDirector.php?course_director=${encodeURIComponent(
+        email
+      )}`;
       const couserDirectorResponse = await fetch(couserDirectorUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      })
-  
+      });
+
       const lecturerResult = await lecturerResponse.json();
-  
+
       if (lecturerResponse.ok && couserDirectorResponse.ok) {
-        Alert.alert('Login Successful', 'You have successfully logged in as a lecturer.');
+        Alert.alert(
+          "Login Successful",
+          "You have successfully logged in as a lecturer."
+        );
         // Navigate to HomeScreenCourseDirector
-        navigation.navigate('HomeScreenCourseDirector', { lecturerData: lecturerResult.data });
+        navigation.navigate("HomeScreenCourseDirector", {
+          lecturerData: lecturerResult.data,
+        });
         // Store lecturer data in local storage
-        await AsyncStorage.setItem('lecturerData', JSON.stringify(lecturerResult.data));
+        await AsyncStorage.setItem(
+          "lecturerData",
+          JSON.stringify(lecturerResult.data)
+        );
         return; // Exit function after successful lecturer login
-      }else if(lecturerResponse.ok){
-        Alert.alert('Login Successful', 'You have successfully logged in as a lecturer.');
+      } else if (lecturerResponse.ok) {
+        Alert.alert(
+          "Login Successful",
+          "You have successfully logged in as a lecturer."
+        );
         // Navigate to HomeScreenCourseDirector
-        navigation.navigate('HomeScreenLecturer', { lecturerData: lecturerResult.data });
+        navigation.navigate("HomeScreenLecturer", {
+          lecturerData: lecturerResult.data,
+        });
         // Store lecturer data in local storage
-        await AsyncStorage.setItem('lecturerData', JSON.stringify(lecturerResult.data));
+        await AsyncStorage.setItem(
+          "lecturerData",
+          JSON.stringify(lecturerResult.data)
+        );
         return; // Exit function after successful lecturer login
       }
-  
+
       // If both logins fail, show an error message
-      Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
-  
+      Alert.alert(
+        "Login Failed",
+        "Invalid email or password. Please try again."
+      );
     } catch (error) {
       // Handle any unexpected errors
-      Alert.alert('Error', 'Something went wrong. Please try again later.');
+      Alert.alert("Error", "Something went wrong. Please try again later.");
     }
-
-
   };
-  
 
   return (
     <LinearGradient
@@ -137,7 +166,7 @@ export default function LoginScreen() {
             placeholder="Enter Your Password"
             placeholderTextColor="#757478"
             value={password}
-        onChangeText={setPassword}
+            onChangeText={setPassword}
             secureTextEntry
           />
         </View>
@@ -155,7 +184,7 @@ export default function LoginScreen() {
           style={styles.loginButton}
           accessible={true}
           accessibilityLabel="Navigate to the Login screen"
-          onPress={handleLogin} 
+          onPress={handleLogin}
         >
           <Text style={styles.loginText}>Log In</Text>
         </TouchableOpacity>

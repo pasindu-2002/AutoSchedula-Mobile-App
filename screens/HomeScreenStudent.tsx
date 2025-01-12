@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,15 +10,15 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreenStudent() {
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
-  const [username, setUsername] = useState('');
-  const [batch, setBatch] = useState('');
+  const [username, setUsername] = useState("");
+  const [batch, setBatch] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [newEntry, setNewEntry] = useState({
@@ -28,91 +28,97 @@ export default function HomeScreenStudent() {
   });
   const [updatedTimetable, setUpdatedTimetable] = useState([
     { day: "", lecturer: "", subject: "" },
-
   ]);
 
-    // Fetch student data from AsyncStorage
+  // Fetch student data from AsyncStorage
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
-        const storedStudentData = await AsyncStorage.getItem('studentData');
+        const storedStudentData = await AsyncStorage.getItem("studentData");
         if (storedStudentData) {
           const studentData = JSON.parse(storedStudentData);
           setUsername(studentData.full_name);
           setBatch(studentData.batch);
         }
       } catch (error) {
-        console.error('Failed to fetch student data from AsyncStorage', error);
+        console.error("Failed to fetch student data from AsyncStorage", error);
       }
     };
 
     fetchStudentData();
   }, []);
 
-
   useEffect(() => {
-  const fetchTimetable = async () => {
-    if (!batch) return; // Avoid fetching if batch is not set
-    setLoading(true);
-    try {
-      const response = await fetch(`https://app.pasinduu.me/readTimetables.php?batch_id=${batch}`);
-      const data = await response.json();
+    const fetchTimetable = async () => {
+      if (!batch) return; // Avoid fetching if batch is not set
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://app.pasinduu.me/readTimetables.php?batch_id=${batch}`
+        );
+        const data = await response.json();
 
-      if (response.ok) {
-        if (data.data && data.data.length > 0) {
-          const formattedTimetable = data.data.map((entry) => {
-            const date = new Date(entry.date);
-            const day = date.toLocaleDateString('en-GB');
-            return {
-              day,
-              lecturer: entry.lecturer_name,
-              subject: entry.module_id,
-            };
-          });
-          setUpdatedTimetable(formattedTimetable);
+        if (response.ok) {
+          if (data.data && data.data.length > 0) {
+            const formattedTimetable = data.data.map((entry) => {
+              const date = new Date(entry.date);
+              const day = date.toLocaleDateString("en-GB");
+              return {
+                day,
+                lecturer: entry.lecturer_name,
+                subject: entry.module_id,
+              };
+            });
+            setUpdatedTimetable(formattedTimetable);
+          } else {
+            // No timetable entries found
+            setUpdatedTimetable([]);
+            Alert.alert(
+              "No Entries",
+              "No timetable entries found for the specified batch."
+            );
+          }
         } else {
-          // No timetable entries found
-          setUpdatedTimetable([]);
-          Alert.alert('No Entries', 'No timetable entries found for the specified batch.');
+          console.error(data.message);
         }
-      } else {
-        console.error(data.message);
+      } catch (error) {
+        console.error("Error fetching timetable:", error);
+        Alert.alert("Error", "Unable to fetch timetable. Please try again.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching timetable:', error);
-      Alert.alert('Error', 'Unable to fetch timetable. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchTimetable();
-}, [batch]);
+    fetchTimetable();
+  }, [batch]);
 
   const toggleMenu = () => setMenuVisible(!menuVisible);
   const toggleAddModal = () => setAddModalVisible(!addModalVisible);
 
-  
-
-
   const handleLogout = async () => {
     Alert.alert(
-      'Confirm Logout',
-      'Are you sure you want to log out?',
+      "Confirm Logout",
+      "Are you sure you want to log out?",
       [
         {
-          text: 'Cancel',
-          style: 'cancel',
+          text: "Cancel",
+          style: "cancel",
         },
         {
-          text: 'OK',
+          text: "OK",
           onPress: async () => {
             try {
-              await AsyncStorage.removeItem('studentData');
-              navigation.navigate('Login');
+              await AsyncStorage.removeItem("studentData");
+              navigation.navigate("Login");
             } catch (error) {
-              console.error('Failed to clear student data from AsyncStorage', error);
-              Alert.alert('Error', 'Something went wrong. Please try again later.');
+              console.error(
+                "Failed to clear student data from AsyncStorage",
+                error
+              );
+              Alert.alert(
+                "Error",
+                "Something went wrong. Please try again later."
+              );
             }
           },
         },
